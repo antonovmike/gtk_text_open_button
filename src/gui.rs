@@ -1,5 +1,8 @@
 use gtk::glib;
 use gtk::prelude::*;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufReader;
 
 pub fn build_ui(application: &gtk::Application) {
     // Create a new window, set it's title and default size
@@ -26,7 +29,10 @@ pub fn build_ui(application: &gtk::Application) {
 
     // Create Button and attach it to grid
     let open_button = gtk::Button::with_label("Open button");
-    grid.attach(&open_button, 0, 1, 1, 1);
+    grid.attach(&open_button, 0, 0, 1, 1);
+    
+    let text_view = gtk::TextView::new();
+    grid.attach(&text_view, 0, 1, 1, 1);
 
     open_button.connect_clicked(glib::clone!(@weak window => move |_| {
         // Create file-opener
@@ -39,6 +45,24 @@ pub fn build_ui(application: &gtk::Application) {
             ("Open", gtk::ResponseType::Ok),
             ("Cancel", gtk::ResponseType::Cancel),
         ]);
+        // Open function
+        file_chooser.connect_response(glib::clone!(@weak text_view => move |file_chooser, response| {
+            if response == gtk::ResponseType::Ok {
+                let filename = file_chooser.filename().expect("Couldn't get filename");
+                let file = File::open(&filename).expect("Couldn't open file");
+
+                let mut reader = BufReader::new(file);
+                let mut contents = String::new();
+                let _ = reader.read_to_string(&mut contents);
+
+                text_view
+                    .buffer()
+                    .expect("Couldn't get window")
+                    .set_text(&contents);
+            }
+            file_chooser.close();
+        }));
+        
         file_chooser.show_all();
     }));
 
