@@ -1,2 +1,6 @@
 # gtk_text_open_button
-Testing open file 
+Open button works
+Text viewer works 
+
+No External GUI files
+GTK only
