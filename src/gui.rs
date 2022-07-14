@@ -40,8 +40,10 @@ pub fn build_ui(application: &gtk::Application) {
     ));
     grid.attach(&quit_button, 1, 0, 1, 1);
 
+    // Create Text Viewer and attach it to grid
+    // Height has to be at least 4
     let text_view = gtk::TextView::new();
-    grid.attach(&text_view, 0, 1, 2, 2);
+    grid.attach(&text_view, 0, 1, 2, 4);
 
     open_button.connect_clicked(glib::clone!(@weak window => move |_| {
         // Create file-opener
