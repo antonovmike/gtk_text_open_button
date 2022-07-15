@@ -32,18 +32,21 @@ pub fn build_ui(application: &gtk::Application) {
     let open_button = gtk::Button::with_label("Open button");
     grid.attach(&open_button, 0, 0, 1, 1);
     
+    let save_button = gtk::Button::with_label("Save button");
+    grid.attach(&save_button, 1, 0, 1, 1);
+
     let quit_button = gtk::Button::with_label("Quit");
     quit_button.connect_clicked(clone!(@weak window => move |_| 
         unsafe {
             window.destroy()
         }
     ));
-    grid.attach(&quit_button, 1, 0, 1, 1);
+    grid.attach(&quit_button, 2, 0, 1, 1);
 
     // Create Text Viewer and attach it to grid
     // Height has to be at least 4
     let text_view = gtk::TextView::new();
-    grid.attach(&text_view, 0, 1, 2, 4);
+    grid.attach(&text_view, 0, 1, 3, 4);
 
     open_button.connect_clicked(glib::clone!(@weak window => move |_| {
         // Create file-opener
@@ -76,6 +79,6 @@ pub fn build_ui(application: &gtk::Application) {
         
         file_chooser.show_all();
     }));
-
+    
     window.show_all();
 }
