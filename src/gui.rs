@@ -1,3 +1,4 @@
+use std::borrow::BorrowMut;
 use gtk::glib;
 use glib::clone;
 use gtk::prelude::*;
@@ -28,10 +29,11 @@ pub fn build_ui(application: &gtk::Application) {
     // Add the grid in the window
     window.set_child(Some(&grid));
 
-    // Create Button and attach it to grid
+    // Create Open sButton and attach it to grid
     let open_button = gtk::Button::with_label("Open button");
     grid.attach(&open_button, 0, 0, 1, 1);
     
+    // Create Save Button and attach it to grid
     let save_button = gtk::Button::with_label("Save button");
     grid.attach(&save_button, 1, 0, 1, 1);
 
@@ -79,6 +81,23 @@ pub fn build_ui(application: &gtk::Application) {
         
         file_chooser.show_all();
     }));
+
+    // SAVE BUTTON
+    //v1 does not work
+    // save_button.connect_clicked(move |_| {
+        //
+    // });
+    //v2 does not work
+    // save_button.connect_clicked( 
+        // clone!( // clone the references with a macro
+            // @strong text_view => move |_| {
+            // @weak text_view => move |_| {
+            // move |_| {
+            // invoke handler with mutable references
+            // handle_save(text_view.borrow_mut())
+            // text_view.handle_save();
+        // })
+    //   );
     
     window.show_all();
 }
