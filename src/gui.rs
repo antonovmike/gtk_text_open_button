@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+// use std::borrow::BorrowMut;
 use gtk::glib;
 use glib::clone;
 use gtk::prelude::*;
@@ -83,21 +83,26 @@ pub fn build_ui(application: &gtk::Application) {
     }));
 
     // SAVE BUTTON
-    //v1 does not work
-    // save_button.connect_clicked(move |_| {
-        //
-    // });
-    //v2 does not work
-    // save_button.connect_clicked( 
-        // clone!( // clone the references with a macro
-            // @strong text_view => move |_| {
-            // @weak text_view => move |_| {
-            // move |_| {
-            // invoke handler with mutable references
-            // handle_save(text_view.borrow_mut())
-            // text_view.handle_save();
-        // })
-    //   );
+    // https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.FileChooserDialog.html
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserDialog.html
+    save_button.connect_clicked(glib::clone!(@weak window => move |_| {
+    	let file_saver = gtk::FileChooserDialog::new(
+    		Some("Save File"),
+    		Some(&window),
+    		gtk::FileChooserAction::Save,
+    	);
+        file_saver.add_buttons(&[
+            ("Save", gtk::ResponseType::Ok),
+            ("Cancel", gtk::ResponseType::Cancel),
+        ]);
+        // Save function
+        // file_saver.connect_response(glib::clone!(@weak text_view => move |file_chooser, response| {
+            // implement
+            // file_saver.close();s
+        // }));
+
+        file_saver.show_all();
+    }));
     
     window.show_all();
 }
