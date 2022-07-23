@@ -1,10 +1,23 @@
 // use std::borrow::BorrowMut;
+use gtk::Window;
+use gtk::WindowType;
+use gtk::FileChooserAction;
+use gtk::ResponseType;
+use std::path::PathBuf;
+use gtk::FileChooserDialog;
+use std::io::BufWriter;
+use std::path::Path;
 use gtk::glib;
 use glib::clone;
 use gtk::prelude::*;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::{
+    // fs::{self, File},
+    io::{Result, Write},
+    // path::Path,
+};
 
 pub fn build_ui(application: &gtk::Application) {
     // Create a new window, set it's title and default size
@@ -85,6 +98,7 @@ pub fn build_ui(application: &gtk::Application) {
     // SAVE BUTTON
     // https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.FileChooserDialog.html
     // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserDialog.html
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html
     save_button.connect_clicked(glib::clone!(@weak window => move |_| {
     	let file_saver = gtk::FileChooserDialog::new(
     		Some("Save File"),
@@ -97,12 +111,37 @@ pub fn build_ui(application: &gtk::Application) {
         ]);
         // Save function
         // file_saver.connect_response(glib::clone!(@weak text_view => move |file_chooser, response| {
-            // implement
-            // file_saver.close();s
+        //     // implement
+        //     file_saver.close();
         // }));
 
         file_saver.show_all();
     }));
     
     window.show_all();
+}
+
+// CHECK
+// https://developer-old.gnome.org/gtk3/unstable/GtkFileChooser.html
+
+pub struct SaveDialog(FileChooserDialog);
+
+impl SaveDialog {
+    pub fn new(path: Option<PathBuf>) -> SaveDialog {
+// New popup menu dialogue
+        let save_dialog = FileChooserDialog::new(
+            Some("Save As"),
+            Some(&Window::new(WindowType::Popup)),
+            FileChooserAction::Save,
+        );
+
+// Add cancel, save buttons to dialogue
+        save_dialog.add_button("Cancel", ResponseType::Cancel.into());
+        save_dialog.add_button("Save", ResponseType::Ok.into());
+
+// Default open file path
+        path.map(|p| save_dialog.set_current_folder(p));
+
+        SaveDialog(save_dialog)
+    }
 }
